@@ -1,3 +1,12 @@
+# Custom
+
+# ssh private key
+id_rsa
+
+# Random secrets
+*.secret
+
+
 # From https://github.com/github/gitignore/blob/main/Packer.gitignore
 
 # Cache objects
