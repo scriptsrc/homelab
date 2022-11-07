@@ -121,9 +121,18 @@ build {
     destination = "/tmp/99-pve.cfg"
   }
 
+  provisioner "file" {
+    source = "files/opencanary.conf"
+    destination = "/tmp/opencanary.conf"
+  }
+
   # Provisioning the VM Template for Cloud-Init Integration in Proxmox #3
   provisioner "shell" {
-    inline = ["sudo cp /tmp/99-pve.cfg /etc/cloud/cloud.cfg.d/99-pve.cfg"]
+    inline = [
+      "sudo cp /tmp/99-pve.cfg /etc/cloud/cloud.cfg.d/99-pve.cfg",
+      "sudo mkdir /etc/opencanaryd",
+      "sudo cp /tmp/opencanary.conf /etc/opencanaryd/opencanary.conf"
+    ]
   }
 
   # Provisioning the VM Template with Docker Installation #4
@@ -134,6 +143,71 @@ build {
       "echo \"deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable\" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null",
       "sudo apt-get -y update",
       "sudo apt-get install -y docker-ce docker-ce-cli containerd.io"
+    ]
+  }
+
+  # Install tailscale #5
+  # tailscale up is invoked in terraform
+  provisioner "shell" {
+    inline = [
+      "curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/focal.noarmor.gpg | sudo tee /usr/share/keyrings/tailscale-archive-keyring.gpg >/dev/null",
+      "curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/focal.tailscale-keyring.list | sudo tee /etc/apt/sources.list.d/tailscale.list",
+      "sudo apt-get -y update",
+      "sudo apt-get install -y tailscale"
+    ]
+  }
+
+  # Install osquery #6
+  provisioner "shell" {
+    inline = [
+      "export OSQUERY_KEY=1484120AC4E9F8A1A577AEEE97A80C63C9D8B80B",
+      "sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys $OSQUERY_KEY",
+      "sudo add-apt-repository 'deb [arch=amd64] https://pkg.osquery.io/deb deb main'",
+      "sudo apt-get -y update",
+      "sudo apt-get install osquery"
+    ]
+  }
+
+  # Thinkst Canaries (Open Canary) #7
+  # https://github.com/thinkst/opencanary
+  # TODO: Make this a boot service: https://github.com/thinkst/opencanary/wiki#how-do-i-start-opencanary-on-startup
+  provisioner "shell" {
+    inline = [
+      "sudo apt-get -y update",
+      "sudo apt-get install -y python3-dev python3-pip python3-virtualenv python3-venv python3-scapy libssl-dev libpcap-dev",
+      "sudo useradd -m canary",
+      # "sudo apt install samba", # if you plan to use the smb module
+      "sudo mkdir /opt/canaries",
+      "sudo chown -R canary:canary /opt/canaries",
+      "sudo su canary -c \"python3 -m venv /opt/canaries/env\"",
+      "sudo su canary -c \". /opt/canaries/env/bin/activate\"",
+      "sudo su canary -c \"pip install opencanary\"",
+      # "pip install scapy pcapy", # optional
+      "echo \"canary ALL=(ALL) NOPASSWD:ALL\" | sudo tee -a /etc/sudoers",
+      # opencanaryd attempts a sudo. Previous line allows a passwordless sudo.
+      "sudo su canary -c \"/home/canary/.local/bin/opencanaryd --start\""
+    ]
+  } 
+
+  # Install splunk forwarder #8
+  # The splunk forwarder is started in terraform.
+  # https://www.splunk.com/en_us/download/universal-forwarder.html
+  # https://docs.splunk.com/Documentation/Forwarder/9.0.2/Forwarder/Installanixuniversalforwarder
+  provisioner "shell" {
+    inline = [
+      "export FILE=splunkforwarder-9.0.2-17e00c557dc1-Linux-x86_64",
+      "export URL=https://download.splunk.com/products/universalforwarder/releases/9.0.2/linux/$FILE.tgz",
+      "export MD5URL=https://download.splunk.com/products/universalforwarder/releases/9.0.2/linux/$FILE.tgz.md5",
+      "export SPLUNK_HOME=/opt/splunkforwarder",
+      "sudo mkdir $SPLUNK_HOME",
+      "sudo useradd -m splunk",
+      # "sudo groupadd splunk",
+      "sudo chown -R splunk:splunk $SPLUNK_HOME",
+      "sudo su splunk -c \"curl $URL --output $SPLUNK_HOME/$FILE.tgz\"",
+      "sudo su splunk -c \"curl $MD5URL --output $SPLUNK_HOME/$FILE.tgz.md5\"",
+      # "cd $SPLUNK_HOME && md5sum --check $SPLUNK_HOME/$FILE.tgz.md5",
+      # TODO: Fix md5sum line.
+      "sudo su splunk -c \"tar xvzf $SPLUNK_HOME/$FILE.tgz -C $SPLUNK_HOME\"",
     ]
   }
 }
