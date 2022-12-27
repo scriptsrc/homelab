@@ -19,9 +19,9 @@
     },
     // TODO: Packer?
     // "postCreateCommand": "npm install -g @devcontainers/cli",
-    "hostRequirements": {
-        "cpus": 4
-	},
+    // "hostRequirements": {
+    //     "cpus": 8
+	// },
 	"customizations": {
 		"vscode": {
 			"extensions": [
