@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
-# mcr.microsoft.com/devcontainers/base:ubuntu
-FROM mcr.microsoft.com/vscode/devcontainers/universal:linux as builder
+# FROM mcr.microsoft.com/vscode/devcontainers/universal:linux as builder
+FROM mcr.microsoft.com/devcontainers/base:ubuntu as builder
 USER root
 WORKDIR /app
 COPY . ./
@@ -13,13 +13,15 @@ RUN mkdir -p binaries && \
   tar xzf ${TSFILE} --strip-components=1 -C binaries
 COPY . ./
 
-FROM mcr.microsoft.com/vscode/devcontainers/universal:linux
+FROM mcr.microsoft.com/devcontainers/base:ubuntu
 USER root
 
-RUN apt-get update && apt-get install -y curl gpg dnsutils
 COPY tailscaled /etc/init.d/tailscaled
-RUN chmod +x /etc/init.d/tailscaled
 COPY --from=builder /app/binaries/tailscaled /usr/sbin/tailscaled
 COPY --from=builder /app/binaries/tailscale /usr/bin/tailscale
-
-RUN mkdir -p /var/run/tailscale /var/cache/tailscale /var/lib/tailscale
+RUN apt-get update \
+  && apt-get install -y curl gpg dnsutils --no-install-recommends \
+  && chmod +x /etc/init.d/tailscaled \
+  && mkdir -p /var/run/tailscale /var/cache/tailscale /var/lib/tailscale \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
