@@ -1,0 +1,35 @@
+{
+    "name": "Tailscale-enabled Codespace",
+    "dockerFile": "Dockerfile",
+    "context": "..",
+    "runArgs": [ "--cap-add=NET_ADMIN", "--cap-add=NET_RAW", "--device=/dev/net/tun" ],
+    "postStartCommand": "/etc/init.d/tailscaled start",
+    "features": {
+        "ghcr.io/devcontainers/features/common-utils:2": {
+            "installZsh": true,
+            "configureZshAsDefaultShell": true,
+            "installOhMyZsh": true,
+            "upgradePackages": true,
+            "username": "labdev"
+        },
+        "ghcr.io/devcontainers/features/terraform:1": {
+            "installTFsec": true,
+            "installTerraformDocs": true
+        }
+    },
+    // TODO: Packer?
+    // "postCreateCommand": "npm install -g @devcontainers/cli",
+    "hostRequirements": {
+        "cpus": 4
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"hashicorp.hcl",
+				"hashicorp.terraform",
+				"GitHub.vscode-pull-request-github",
+				"ms-azuretools.vscode-docker"
+			]
+		}
+	}
+}
