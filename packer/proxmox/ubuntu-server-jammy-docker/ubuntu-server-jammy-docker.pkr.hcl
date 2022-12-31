@@ -126,6 +126,11 @@ build {
     destination = "/tmp/opencanary.conf"
   }
 
+  provisioner "file" {
+    soure = "files/opencanary.service"
+    destination = "/etc/systemd/system/opencanary.service"
+  }
+
   # Provisioning the VM Template for Cloud-Init Integration in Proxmox #3
   provisioner "shell" {
     inline = [
