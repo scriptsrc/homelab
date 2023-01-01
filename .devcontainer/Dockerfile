@@ -16,7 +16,7 @@ COPY . ./
 
 ENV PACKERFILE=packer_1.8.5_linux_amd64.zip
 RUN wget https://releases.hashicorp.com/packer/1.8.5/${PACKERFILE} && \
-  tar xvf ${PACKERFILE} --strip-components=1 -C binaries
+  unzip ${PACKERFILE} -d binaries
 COPY . ./
 
 FROM mcr.microsoft.com/devcontainers/base:ubuntu
