@@ -128,7 +128,7 @@ build {
 
   provisioner "file" {
     source      = "files/opencanary.service"
-    destination = "/etc/systemd/system/opencanary.service"
+    destination = "/tmp/opencanary.service"
   }
 
   # Provisioning the VM Template for Cloud-Init Integration in Proxmox #3
@@ -136,7 +136,8 @@ build {
     inline = [
       "sudo cp /tmp/99-pve.cfg /etc/cloud/cloud.cfg.d/99-pve.cfg",
       "sudo mkdir /etc/opencanaryd",
-      "sudo cp /tmp/opencanary.conf /etc/opencanaryd/opencanary.conf"
+      "sudo cp /tmp/opencanary.conf /etc/opencanaryd/opencanary.conf",
+      "sudo cp /tmp/opencanary.service /etc/systemd/system/opencanary.service"
     ]
   }
 
