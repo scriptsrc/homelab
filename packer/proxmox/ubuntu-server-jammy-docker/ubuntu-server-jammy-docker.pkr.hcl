@@ -127,7 +127,7 @@ build {
   }
 
   provisioner "file" {
-    soure       = "files/opencanary.service"
+    source      = "files/opencanary.service"
     destination = "/etc/systemd/system/opencanary.service"
   }
 
