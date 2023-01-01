@@ -122,12 +122,12 @@ build {
   }
 
   provisioner "file" {
-    source = "files/opencanary.conf"
+    source      = "files/opencanary.conf"
     destination = "/tmp/opencanary.conf"
   }
 
   provisioner "file" {
-    soure = "files/opencanary.service"
+    soure       = "files/opencanary.service"
     destination = "/etc/systemd/system/opencanary.service"
   }
 
@@ -192,7 +192,7 @@ build {
       # opencanaryd attempts a sudo. Previous line allows a passwordless sudo.
       "sudo su canary -c \"/home/canary/.local/bin/opencanaryd --start\""
     ]
-  } 
+  }
 
   # Install splunk forwarder #8
   # The splunk forwarder is started in terraform.
