@@ -17,8 +17,7 @@
             "installTerraformDocs": true
         }
     },
-    // TODO: Packer?
-    // "postCreateCommand": "npm install -g @devcontainers/cli",
+    "postCreateCommand": "tailscale up --authkey=${TAILSCALE_AUTHKEY} --netfilter-mode=off",
     // "hostRequirements": {
     //     "cpus": 8
 	// },
@@ -30,6 +29,11 @@
 				"GitHub.vscode-pull-request-github",
 				"ms-azuretools.vscode-docker"
 			]
+		}
+	},
+	"portsAttributes": {
+		"8802": {
+			"label": "packer http port"
 		}
 	}
 }
