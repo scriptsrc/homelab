@@ -2,8 +2,8 @@
     "name": "Tailscale-enabled Codespace",
     "dockerFile": "Dockerfile",
     "context": "..",
-    "runArgs": [ "--cap-add=NET_ADMIN", "--cap-add=NET_RAW", "--device=/dev/net/tun" ],
-    "postStartCommand": "/etc/init.d/tailscaled start",
+    "runArgs": [ "--cap-add=NET_ADMIN", "--cap-add=NET_RAW", "--device=/dev/net/tun", "--env-file",".devcontainer/devcontainer.env"],
+    "postStartCommand": "sudo /etc/init.d/tailscaled start; /usr/bin/tailscale status",
     "features": {
         "ghcr.io/devcontainers/features/common-utils:2": {
             "installZsh": true,
@@ -17,7 +17,7 @@
             "installTerraformDocs": true
         }
     },
-    "postCreateCommand": "tailscale up --authkey=${TAILSCALE_AUTHKEY} --netfilter-mode=off",
+    // "postCreateCommand": "",
     // "hostRequirements": {
     //     "cpus": 8
 	// },
