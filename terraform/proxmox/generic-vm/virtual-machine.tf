@@ -2,7 +2,7 @@
 # ---
 # Create a new VM from a clone
 
-resource "proxmox_vm_qemu" "tailscale-subnet-router" {
+resource "proxmox_vm_qemu" "virtual-machine" {
 
   # VM General Settings
   target_node = var.proxmox_node
@@ -65,10 +65,12 @@ resource "proxmox_vm_qemu" "tailscale-subnet-router" {
     port        = self.ssh_port
   }
 
-  # Launch tailscale as a subnet router:
-  provisioner "remote-exec" {
-    inline = [
-      "sudo tailscale up --advertise-routes=192.168.58.0/24 --authkey ${var.tailscale_auth_key}"
-    ]
-  }
+}
+
+output "ssh_host" {
+  value = proxmox_vm_qemu.virtual-machine.ssh_host
+}
+
+output "ssh_port" {
+  value = proxmox_vm_qemu.virtual-machine.ssh_port
 }
