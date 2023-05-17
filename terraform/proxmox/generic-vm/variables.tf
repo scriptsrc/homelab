@@ -18,7 +18,7 @@ variable "vm_name" {
 
 variable "proxmox_template_to_clone" {
   type        = string
-  default     = "ubuntu-server-jammy"
+  default     = "foundation-ami"
   description = "Name of the Proxmox template we will be cloning."
 }
 
@@ -36,7 +36,7 @@ variable "vm_memory" {
 
 variable "vm_disk_size" {
   type    = string
-  default = "20G"
+  default = "32G"
 }
 
 variable "proxmox_api_url" {
@@ -48,16 +48,6 @@ variable "proxmox_api_token_id" {
 }
 
 variable "proxmox_api_token_secret" {
-  type      = string
-  sensitive = true
-}
-
-variable "tailscale_auth_key" {
-  type      = string
-  sensitive = true
-}
-
-variable "splunk_admin_password" {
   type      = string
   sensitive = true
 }

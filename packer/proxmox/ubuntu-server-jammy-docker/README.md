@@ -14,6 +14,8 @@ vm_cpu                   = 4
 vm_memory                = 8096
 vm_disk_size             = "32G"
 ```
+**Note! - Make sure the packer_server_ip is updated!**
+
 <hr>
 
 2. Add an `id_rsa` for packer to use and make sure the `files\http\user-data` has a corresponding `id_rsa.pub`.
